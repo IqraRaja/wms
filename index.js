@@ -13,7 +13,7 @@ function xyzToBounds(x, y, z) {
     return [minx, miny, maxx, maxy];
 }
 
-function getTileURL(coordinates, zoom) {
+function getKabelTileURL(coordinates, zoom) {
     const bbox = xyzToBounds(coordinates.x, coordinates.y, zoom).join(",");
     console.log("bbox", bbox);
     const url = "https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?" +
@@ -30,20 +30,51 @@ function getTileURL(coordinates, zoom) {
     return url;
 }
 
+function getPOITileURL(coordinates, zoom) {
+    const bbox = xyzToBounds(coordinates.x, coordinates.y, zoom).join(",");
+    console.log("bbox", bbox);
+    const url = "https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?" +
+        "service=WMS" +
+        "&version=1.3.0" +
+        "&authkey=909ecf47a41b41659deec0e454326fac" +
+        "&request=GetMap" +
+        "&FORMAT=image%2Fpng" +
+        "&layers=Belysningsstolpe" +
+        "&bbox=" + bbox +
+        "&SRS=EPSG:3857" +
+        "&WIDTH=256&HEIGHT=256" +
+        "&Transparent=True"
+    return url;
+}
+
 function initMap() {
+    // Displaying map on HTML Div
     const targetDiv = document.getElementById("map")
     const map = new google.maps.Map(targetDiv, {
         center: {lat: 59.21, lng: 17.8974},
         zoom: 12,
     });
 
-    const landcover = new google.maps.ImageMapType({
-        getTileUrl: getTileURL,
-        name: "Landcover",
-        alt: "National Land Cover Database 2016",
+    //adding spain cabel network on top of google map
+    const kabel = new google.maps.ImageMapType({
+        getTileUrl: getKabelTileURL,
+        name: "Kabel",
+        alt: "Kabel Network",
         minZoom: 0,
         maxZoom: 19,
         opacity: 1.0
     });
-    map.overlayMapTypes.push(landcover);
+    map.overlayMapTypes.push(kabel);
+
+    //add spain poi
+    const poi = new google.maps.ImageMapType({
+        getTileUrl: getPOITileURL,
+        name: "POI",
+        alt: "Point of Interest",
+        minZoom: 0,
+        maxZoom: 19,
+        opacity: 1.0
+    });
+    map.overlayMapTypes.push(poi);
+
 }
