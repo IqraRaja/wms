@@ -16,13 +16,13 @@ function xyzToBounds(x, y, z) {
 function getTileURL(coordinates, zoom) {
     const bbox = xyzToBounds(coordinates.x, coordinates.y, zoom).join(",");
     console.log("bbox", bbox);
-    const url = "http://172.105.50.132:8080/" +
-        "geoserver/tiger/wms?" +
+    const url = "https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?" +
         "service=WMS" +
-        "&version=1.1.0" +
+        "&version=1.3.0" +
+        "&authkey=909ecf47a41b41659deec0e454326fac" +
         "&request=GetMap" +
         "&FORMAT=image%2Fpng" +
-        "&layers=tiger%3Atiger_roads" +
+        "&layers=Belysningskabel" +
         "&bbox=" + bbox +
         "&SRS=EPSG:3857" +
         "&WIDTH=256&HEIGHT=256" +
@@ -33,7 +33,7 @@ function getTileURL(coordinates, zoom) {
 function initMap() {
     const targetDiv = document.getElementById("map")
     const map = new google.maps.Map(targetDiv, {
-        center: {lat: 40.7850, lng: -73.9660},
+        center: {lat: 59.21, lng: 17.8974},
         zoom: 12,
     });
 
