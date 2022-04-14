@@ -123,7 +123,7 @@ function createLayerSwitcher() {
 }
 
 function toggleLayer(chk) {
-    alert(chk.value);
+    // alert(chk.value);
     const layer = layers[chk.value];
     console.log("layer", layer);
     // const i = chk.value;
