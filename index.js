@@ -1,15 +1,14 @@
-let map;
-
-
 const EXTENT = [-Math.PI * 6378137, Math.PI * 6378137];
+const layers = [];
+let map = null;
 
 function xyzToBounds(x, y, z) {
-    var tileSize = EXTENT[1] * 2 / Math.pow(2, z);
-    var minx = EXTENT[0] + x * tileSize;
-    var maxx = EXTENT[0] + (x + 1) * tileSize;
+    const tileSize = EXTENT[1] * 2 / Math.pow(2, z);
+    const minx = EXTENT[0] + x * tileSize;
+    const maxx = EXTENT[0] + (x + 1) * tileSize;
     // remember y origin starts at top
-    var miny = EXTENT[1] - (y + 1) * tileSize;
-    var maxy = EXTENT[1] - y * tileSize;
+    const miny = EXTENT[1] - (y + 1) * tileSize;
+    const maxy = EXTENT[1] - y * tileSize;
     return [minx, miny, maxx, maxy];
 }
 
@@ -50,31 +49,87 @@ function getPOITileURL(coordinates, zoom) {
 function initMap() {
     // Displaying map on HTML Div
     const targetDiv = document.getElementById("map")
-    const map = new google.maps.Map(targetDiv, {
+    map = new google.maps.Map(targetDiv, {
         center: {lat: 59.21, lng: 17.8974},
         zoom: 12,
     });
 
     //adding spain cabel network on top of google map
-    const kabel = new google.maps.ImageMapType({
+    layers.push(new google.maps.ImageMapType({
         getTileUrl: getKabelTileURL,
         name: "Kabel",
         alt: "Kabel Network",
         minZoom: 0,
         maxZoom: 19,
         opacity: 1.0
-    });
-    map.overlayMapTypes.push(kabel);
+    }));
+    map.overlayMapTypes.push(layers[layers.length - 1]);
 
     //add spain poi
-    const poi = new google.maps.ImageMapType({
+    layers.push(new google.maps.ImageMapType({
         getTileUrl: getPOITileURL,
         name: "POI",
         alt: "Point of Interest",
         minZoom: 0,
         maxZoom: 19,
         opacity: 1.0
-    });
-    map.overlayMapTypes.push(poi);
+    }));
+    map.overlayMapTypes.push(layers[layers.length - 1]);
+    createLayerSwitcher();
+}
 
+function createLayerSwitcher() {
+    var controlDiv = document.createElement('div');
+    // var myControl = new MyControl(controlDiv);
+    controlDiv.index = 1;
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+    // Set CSS for the control border.
+    const controlUI = document.createElement("div");
+
+    controlUI.style.backgroundColor = "#fff";
+    controlUI.style.border = "2px solid #fff";
+    controlUI.style.borderRadius = "3px";
+    controlUI.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
+    controlUI.style.cursor = "pointer";
+    controlUI.style.marginTop = "8px";
+    controlUI.style.marginBottom = "22px";
+    controlUI.style.marginRight = "10px";
+
+    controlUI.style.textAlign = "center";
+    controlUI.title = "Click to recenter the map";
+    // controlUI.style.height="200px";
+    controlDiv.appendChild(controlUI);
+
+    layers.forEach((layer, index) => {
+        const controlText = document.createElement("div");
+
+        controlText.style.color = "rgb(25,25,25)";
+        controlText.style.fontFamily = "Roboto,Arial,sans-serif";
+        controlText.style.fontSize = "16px";
+        controlText.style.lineHeight = "38px";
+        controlText.style.paddingLeft = "5px";
+        controlText.style.paddingRight = "5px";
+        let html = `<input type="checkbox" id="${layer.name}" onclick="toggleLayer(this);" value="${index}" checked>`
+        html += `<label for="${layer.name}"> ${layer.name}</label><br>`
+        controlText.innerHTML = html;
+        controlUI.appendChild(controlText);
+    })
+    // Set CSS for the control interior.
+
+    // Setup the click event listeners: simply set the map to Chicago.
+    // controlUI.addEventListener("click", () => {
+    //     map.setCenter(chicago);
+    // });
+}
+
+function toggleLayer(chk) {
+    alert(chk.value);
+    const layer = layers[chk.value];
+    console.log("layer", layer);
+    // const i = chk.value;
+    // if (layers[i].getMap() === null) {
+    //     layers[i].setMap(map);
+    // } else {
+    //     layers[i].setMap(null);
+    // }
 }
