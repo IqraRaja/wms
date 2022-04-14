@@ -9,7 +9,7 @@ function xyzToBounds(x, y, z) {
     // remember y origin starts at top
     const miny = EXTENT[1] - (y + 1) * tileSize;
     const maxy = EXTENT[1] - y * tileSize;
-    return [minx, miny, maxx, maxy];
+    return [minx+1, miny+1, maxx+1, maxy+1];
 }
 
 function getKabelTileURL(coordinates, zoom) {
