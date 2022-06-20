@@ -2,18 +2,35 @@ const EXTENT = [-Math.PI * 6378137, Math.PI * 6378137];
 const layers = [];
 let map = null;
 
-function xyzToBounds(x, y, z) {
+// function covert24326(x, y) {
+//     const source = new Proj4js.Proj('WGS84');
+//     const dest = new Proj4js.Proj('EPSG:3857');
+//     const point = new Proj4js.Point(x, y);
+//     const newPoint = Proj4js.transform(source, dest, point);
+//     return newPoint;
+//
+// }
+
+function xyzToBounds3857(x, y, z) {
     const tileSize = EXTENT[1] * 2 / Math.pow(2, z);
     const minx = EXTENT[0] + x * tileSize;
     const maxx = EXTENT[0] + (x + 1) * tileSize;
-    proj4('EPSG:3857', 'EPSG:4326', coordinates)
     // remember y origin starts at top
     const miny = EXTENT[1] - (y + 1) * tileSize;
     const maxy = EXTENT[1] - y * tileSize;
-    // const buffSize = 1
+    const buffSize = 0
+
     return [minx + buffSize, miny + buffSize, maxx + buffSize, maxy + buffSize];
 }
 
+function xyzToBounds(tile_x, tile_y, zoom) {
+    const n = Math.pow(2, zoom)
+    const left_lon_deg = tile_x / n * 360.0 - 180.0
+    const right_lon_deg = (tile_x + 1) / n * 360.0 - 180.0
+    const top_lat_deg = (Math.atan(Math.sinh(Math.PI * (1 - 2 * tile_y / n)))) * 180 / Math.PI
+    const bottom_lat_deg = (Math.atan(Math.sinh(Math.PI * (1 - 2 * (tile_y + 1) / n)))) * 180 / Math.PI
+    return [ bottom_lat_deg, left_lon_deg, top_lat_deg, right_lon_deg]
+}
 function getKabelTileURL(coordinates, zoom) {
     const bbox = xyzToBounds(coordinates.x, coordinates.y, zoom).join(",");
     console.log("bbox", bbox);
@@ -25,7 +42,7 @@ function getKabelTileURL(coordinates, zoom) {
         "&FORMAT=image%2Fpng" +
         "&layers=Belysningskabel" +
         "&bbox=" + bbox +
-        "&SRS=EPSG:3857" +
+        "&SRS=EPSG:4326" +
         "&WIDTH=256&HEIGHT=256" +
         "&Transparent=True"
     return url;
@@ -42,7 +59,7 @@ function getPOITileURL(coordinates, zoom) {
         "&FORMAT=image%2Fpng" +
         "&layers=Belysningsstolpe" +
         "&bbox=" + bbox +
-        "&crs=EPSG:3857" +
+        "&crs=EPSG:4326" +
         "&WIDTH=256&HEIGHT=256" +
         "&Transparent=True"
     return url;

@@ -1,7 +1,11 @@
-https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?service=WMS&version=1.3.0
+https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?
+service=WMS
+&version=1.3.0
 &token=909ecf47a41b41659deec0e454326fac&request=GetMap
-&FORMAT=image/png&layers=Belysningsstolpe
-&bbox=59.003223,17.587496,59.303695,18.042129&WIDTH=256&HEIGHT=256
+&FORMAT=image/png
+&layers=Belysningsstolpe
+&bbox=59.003223,17.587496,59.303695,18.042129
+&WIDTH=256&HEIGHT=256
 &Transparent=True&crs=EPSG:4326
 
 
@@ -20,3 +24,14 @@ service=WMS
 
 
 https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?service=WMS&request=GetCapabilities
+
+https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?
+service=WMS
+&version=1.3.0
+&token=909ecf47a41b41659deec0e454326fac
+&request=GetMap
+&FORMAT=image%2Fpng
+&layers=Belysningsstolpe
+&bbox=17.9296875,58.99531118795094,18.28125,59.175928249271365
+&crs=EPSG:4326&WIDTH=256&HEIGHT=256
+&Transparent=True
