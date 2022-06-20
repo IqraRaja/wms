@@ -33,7 +33,7 @@ function xyzToBounds(tile_x, tile_y, zoom) {
 }
 function getKabelTileURL(coordinates, zoom) {
     const bbox = xyzToBounds(coordinates.x, coordinates.y, zoom).join(",");
-    console.log("bbox", bbox);
+    // console.log("bbox", bbox);
     const url = "https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?" +
         "service=WMS" +
         "&version=1.3.0" +
@@ -50,7 +50,7 @@ function getKabelTileURL(coordinates, zoom) {
 
 function getPOITileURL(coordinates, zoom) {
     const bbox = xyzToBounds(coordinates.x, coordinates.y, zoom).join(",");
-    console.log("bbox", bbox);
+    // console.log("bbox", bbox);
     const url = "https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?" +
         "service=WMS" +
         "&version=1.3.0" +
