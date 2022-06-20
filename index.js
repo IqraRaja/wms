@@ -6,10 +6,11 @@ function xyzToBounds(x, y, z) {
     const tileSize = EXTENT[1] * 2 / Math.pow(2, z);
     const minx = EXTENT[0] + x * tileSize;
     const maxx = EXTENT[0] + (x + 1) * tileSize;
+    proj4('EPSG:3857', 'EPSG:4326', coordinates)
     // remember y origin starts at top
     const miny = EXTENT[1] - (y + 1) * tileSize;
     const maxy = EXTENT[1] - y * tileSize;
-    const buffSize = 1
+    // const buffSize = 1
     return [minx + buffSize, miny + buffSize, maxx + buffSize, maxy + buffSize];
 }
 
@@ -19,7 +20,7 @@ function getKabelTileURL(coordinates, zoom) {
     const url = "https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?" +
         "service=WMS" +
         "&version=1.3.0" +
-        "&authkey=909ecf47a41b41659deec0e454326fac" +
+        "&token=909ecf47a41b41659deec0e454326fac" +
         "&request=GetMap" +
         "&FORMAT=image%2Fpng" +
         "&layers=Belysningskabel" +
@@ -36,12 +37,12 @@ function getPOITileURL(coordinates, zoom) {
     const url = "https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?" +
         "service=WMS" +
         "&version=1.3.0" +
-        "&authkey=909ecf47a41b41659deec0e454326fac" +
+        "&token=909ecf47a41b41659deec0e454326fac" +
         "&request=GetMap" +
         "&FORMAT=image%2Fpng" +
         "&layers=Belysningsstolpe" +
         "&bbox=" + bbox +
-        "&SRS=EPSG:3857" +
+        "&crs=EPSG:3857" +
         "&WIDTH=256&HEIGHT=256" +
         "&Transparent=True"
     return url;
@@ -51,8 +52,8 @@ function initMap() {
     // Displaying map on HTML Div
     const targetDiv = document.getElementById("map")
     map = new google.maps.Map(targetDiv, {
-        center: {lat: 59.21, lng: 17.8974},
-        zoom: 12,
+        center: {lat: 59.18284, lng: 17.81808},
+        zoom: 14,
     });
 
     //adding spain cabel network on top of google map
