@@ -95,6 +95,19 @@ function initMap() {
     }));
     map.overlayMapTypes.push(layers[layers.length - 1]);
     createLayerSwitcher();
+    createIdentifier();
+}
+function  createIdentifier() {
+    var controlDiv = document.createElement('div');
+    controlDiv.index = 1;
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+    const btn=document.createElement("button");
+    btn.innerHTML='Green'
+    controlDiv.appendChild(btn);
+    btn.onclick=function () {
+        alert('Identifier')
+
+    }
 }
 
 function createLayerSwitcher() {
