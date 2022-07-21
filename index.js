@@ -105,7 +105,13 @@ function  createIdentifier() {
     btn.innerHTML='Green'
     controlDiv.appendChild(btn);
     btn.onclick=function () {
-        alert('Identifier')
+        const url = "https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?" +
+            "service=WFS" +
+            "&version=1.3.0" +
+            "&token=909ecf47a41b41659deec0e454326fac" +
+            "&request=GetFeature" +
+            "&FORMAT=image%2Fpng"
+        alert(url)
 
     }
 }
