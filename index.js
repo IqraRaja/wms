@@ -183,12 +183,7 @@ function toggleLayer(chk) {
  */
 let infoWindow = null;
 let identifierListener = null;
-
-const getFeatureInfo = async (latlng) => {
-    latlng = latlng.toJSON()
-    console.log(latlng);
-    const diff = 1
-    const bbox = `${latlng["lng"] - diff},${latlng["lat"] - diff},${latlng["lng"] + diff},${latlng["lat"] + diff}`
+const getWMSFeaturesInfoURL = (bbox) => {
     const url = "https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?" +
         "service=WMS" +
         "&version=1.3.0" +
@@ -207,10 +202,35 @@ const getFeatureInfo = async (latlng) => {
         "&info_format=application/json" +
         "&transparent=true" +
         "&feature_count=50";
-        console.log(url)
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log("res", data);
+    return url
+}
+const getWFSGetFeatureURL = (bbox, typeName) => {
+    const url = "https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?" +
+        "service=WFS" +
+        "&version=auto" +
+        "&token=909ecf47a41b41659deec0e454326fac" +
+        "&request=GetFeature" +
+        "&typename=" + typeName +
+        "&srsname=EPSG:4326" +
+        "&bbox=" + bbox +
+        "&outputFormat=application/json";
+    return url;
+}
+const getFeatureInfo = async (latlng) => {
+    latlng = latlng.toJSON()
+    console.log(latlng);
+    const diff = 5 / (110 * 1000)
+    const bbox = `${latlng["lng"] - diff},${latlng["lat"] - diff},${latlng["lng"] + diff},${latlng["lat"] + diff}`
+    let url;
+    url = getWFSGetFeatureURL(bbox, 'Belysningskabel');
+    console.log(url)
+    url = getWFSGetFeatureURL(bbox, 'Belysningsstolpe');
+
+    // const url = getWMSFeaturesInfoURL(bbox)
+    console.log(url)
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log("res", data);
 }
 
 function toggleIdentifierListener() {
@@ -218,8 +238,8 @@ function toggleIdentifierListener() {
         identifierListener = map.addListener("click", (mapsMouseEvent) => {
 
             // latlong = mapsMouseEvent.latLng.toJSON()
-            getFeatureInfo(mapsMouseEvent.latLng).then(()=>{
-               console.log("res")
+            getFeatureInfo(mapsMouseEvent.latLng).then(() => {
+                console.log("res")
             });
             // Close the current InfoWindow.
             if (infoWindow)
