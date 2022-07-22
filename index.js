@@ -29,8 +29,9 @@ function xyzToBounds(tile_x, tile_y, zoom) {
     const right_lon_deg = (tile_x + 1) / n * 360.0 - 180.0
     const top_lat_deg = (Math.atan(Math.sinh(Math.PI * (1 - 2 * tile_y / n)))) * 180 / Math.PI
     const bottom_lat_deg = (Math.atan(Math.sinh(Math.PI * (1 - 2 * (tile_y + 1) / n)))) * 180 / Math.PI
-    return [ bottom_lat_deg, left_lon_deg, top_lat_deg, right_lon_deg]
+    return [bottom_lat_deg, left_lon_deg, top_lat_deg, right_lon_deg]
 }
+
 function getKabelTileURL(coordinates, zoom) {
     const bbox = xyzToBounds(coordinates.x, coordinates.y, zoom).join(",");
     // console.log("bbox", bbox);
@@ -94,24 +95,28 @@ function initMap() {
         opacity: 1.0
     }));
     map.overlayMapTypes.push(layers[layers.length - 1]);
-    createLayerSwitcher();
+
+    // createLayerSwitcher();
     createIdentifier();
 }
-function  createIdentifier() {
+
+function createIdentifier() {
+
     var controlDiv = document.createElement('div');
     controlDiv.index = 1;
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
-    const btn=document.createElement("button");
-    btn.innerHTML='Green'
+    const btn = document.createElement("button");
+    btn.innerHTML = 'Green'
     controlDiv.appendChild(btn);
-    btn.onclick=function () {
-        const url = "https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?" +
-            "service=WFS" +
-            "&version=1.3.0" +
-            "&token=909ecf47a41b41659deec0e454326fac" +
-            "&request=GetFeature" +
-            "&FORMAT=image%2Fpng"
-        alert(url)
+    btn.onclick = function () {
+        // const url = "https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?" +
+        //     "service=WFS" +
+        //     "&version=1.3.0" +
+        //     "&token=909ecf47a41b41659deec0e454326fac" +
+        //     "&request=GetFeature" +
+        //     "&FORMAT=image%2Fpng"
+        // alert(url)
+        toggleIdentifierListener();
 
     }
 }
@@ -170,4 +175,67 @@ function toggleLayer(chk) {
     // } else {
     //     layers[i].setMap(null);
     // }
+}
+
+/***
+ *
+ * identifier code
+ */
+let infoWindow = null;
+let identifierListener = null;
+
+const getFeatureInfo = async (latlng) => {
+    latlng = latlng.toJSON()
+    console.log(latlng);
+    const diff = 1
+    const bbox = `${latlng["lng"] - diff},${latlng["lat"] - diff},${latlng["lng"] + diff},${latlng["lat"] + diff}`
+    const url = "https://gd-botkyrka.sokigohosting.com/public-maps/gator_och_parker/belysning?" +
+        "service=WMS" +
+        "&version=1.3.0" +
+        "&token=909ecf47a41b41659deec0e454326fac" +
+        "&request=GetFeatureInfo" +
+        "&layers=Belysningsstolpe,Belysningskabel" +
+        "&query_layers=Belysningsstolpe,Belysningskabel" +
+        "&exceptions=application/vnd.ogc.se_inimage" +
+        "&x=128" +
+        "&y=128" +
+        "&bbox=" + bbox +
+        "&width=256" +
+        "&height=256" +
+        "&srs=EPSG:4326" +
+        "&format=application/json" +
+        "&info_format=application/json" +
+        "&transparent=true" +
+        "&feature_count=50";
+        console.log(url)
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log("res", data);
+}
+
+function toggleIdentifierListener() {
+    if (!identifierListener) {
+        identifierListener = map.addListener("click", (mapsMouseEvent) => {
+
+            // latlong = mapsMouseEvent.latLng.toJSON()
+            getFeatureInfo(mapsMouseEvent.latLng).then(()=>{
+               console.log("res")
+            });
+            // Close the current InfoWindow.
+            if (infoWindow)
+                infoWindow.close();
+
+            // Create a new InfoWindow.
+            infoWindow = new google.maps.InfoWindow({
+                position: mapsMouseEvent.latLng,
+            });
+            infoWindow.setContent(
+                JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2)
+            );
+            infoWindow.open(map);
+        });
+    } else {
+        map.removeListener(identifierListener);
+        identifierListener = null;
+    }
 }
